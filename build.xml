@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+  Build file for World Wind example programs.
+
+  Author: Parker Abercrombie
+  ==================================================================== -->
+
+<project default="compile" basedir=".">
+
+    <target name="init">
+        <property name="name" value="World Wind Examples"/>
+        <property name="version" value="0.1"/>
+
+        <property name="debug" value="on"/>
+
+        <property name="src.dir" value="./src"/>
+        <property name="lib.dir" value="./lib"/>
+
+        <property name="build.dir" value="./build"/>
+
+        <property name="ww.download" value="http://worldwind.arc.nasa.gov/java/2.0.0/webstart"/>
+
+        <path id="project.class.path">
+            <fileset dir="${lib.dir}">
+                <include name="**/*.jar"/>
+            </fileset>
+            <pathelement path="${java.class.path}/"/>
+        </path>
+    </target>
+
+    <target name="detect.platform">
+        <condition property="platform" value="macosx-universal">
+            <os family="mac"/>
+        </condition>
+        <condition property="platform" value="linux-amd64">
+            <os family="unix" arch="amd64"/>
+        </condition>
+        <condition property="platform" value="linux-i586">
+            <os family="unix" arch="i586"/>
+        </condition>
+        <condition property="platform" value="windows-amd64">
+            <os family="windows" arch="amd64"/>
+        </condition>
+        <condition property="platform" value="windows-i586">
+            <os family="windows" arch="i586"/>
+        </condition>
+    </target>
+
+    <target name="dependency.check">
+        <available file="${lib.dir}/worldwind.jar" property="dependencies.present"/>
+    </target>
+
+
+    <target name="dependencies.download" depends="dependency.check,detect.platform" unless="dependencies.present">
+        <mkdir dir="${lib.dir}"/>
+        <get src="${ww.download}/worldwind.jar" dest="${lib.dir}/worldwind.jar"/>
+        <get src="${ww.download}/worldwindx.jar" dest="${lib.dir}/worldwindx.jar"/>
+        <get src="${ww.download}/jogl-all.jar" dest="${lib.dir}/jogl-all.jar"/>
+        <get src="${ww.download}/gluegen-rt.jar" dest="${lib.dir}/gluegen-rt.jar"/>
+
+        <!-- OS specific resources -->
+        <get src="${ww.download}/jogl-all-natives-${platform}.jar" dest="${lib.dir}/jogl-all-natives-${platform}.jar"/>
+        <get src="${ww.download}/gluegen-rt-natives-${platform}.jar"
+             dest="${lib.dir}/gluegen-rt-natives-${platform}.jar"/>
+        <get src="${ww.download}/gdal-natives-${platform}.jar" dest="${lib.dir}/gdal-natives-${platform}.jar"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Compiles the source directory                                       -->
+    <!-- =================================================================== -->
+    <target name="compile" depends="init,dependencies.download">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${build.dir}"
+               debug="${debug}"
+               deprecation="on"
+               excludes="**/test/**,**/doclet/**"
+               source="1.7"
+               target="1.7"
+               includeAntRuntime="false">
+            <classpath refid="project.class.path"/>
+        </javac>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Cleans everything                                                   -->
+    <!-- =================================================================== -->
+    <target name="clean" depends="init">
+        <delete dir="${build.dir}"/>
+    </target>
+
+</project>
