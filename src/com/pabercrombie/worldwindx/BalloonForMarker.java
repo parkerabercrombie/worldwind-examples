@@ -20,92 +20,92 @@ import java.util.*;
  */
 public class BalloonForMarker extends ApplicationTemplate
 {
+    /**
+     * Custom Marker class that captures the ID of the marker.
+     */
+    protected static class MyMarker extends BasicMarker
+    {
+        protected int id;
+
+        public MyMarker(Position position, MarkerAttributes attrs, int id)
+        {
+            super(position, attrs);
+            this.id = id;
+        }
+
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+
+    /**
+     * Controller to create a balloon when a markers is selected.
+     */
+    protected static class MarkerBalloonController extends BalloonController
+    {
+        /** Layer to render the balloons. */
+        protected RenderableLayer balloonLayer;
+
+        public MarkerBalloonController(WorldWindow wwd)
+        {
+            super(wwd);
+            this.balloonLayer = new RenderableLayer();
+            wwd.getModel().getLayers().add(this.balloonLayer);
+        }
+
+        /**
+         * Create a balloon for the marker that was selected.
+         *
+         * @param pickedObject PickedObject to inspect. May not be null.
+         *
+         * @return a balloon
+         */
+        @Override
+        protected Balloon getBalloon(PickedObject pickedObject)
+        {
+            Object topObject = pickedObject.getObject();
+            if (topObject instanceof MyMarker)
+            {
+                Balloon balloon = this.createBalloon((MyMarker) topObject, pickedObject.getPosition());
+                this.balloonLayer.addRenderable(balloon);
+
+                return balloon;
+            }
+
+            return super.getBalloon(pickedObject);
+        }
+
+        /**
+         * Create a balloon for a marker.
+         */
+        protected Balloon createBalloon(MyMarker marker, Position position)
+        {
+            String balloonText = "Marker " + marker.getId();
+            GlobeBalloon balloon = new GlobeBrowserBalloon(balloonText, position);
+            balloon.setAttributes(new BasicBalloonAttributes());
+            balloon.setVisible(false);
+            balloon.setAlwaysOnTop(true);
+            return balloon;
+        }
+
+        /**
+         * Remove the previously created balloon.
+         */
+        @Override
+        protected void hideBalloon()
+        {
+            if (this.balloon != null)
+            {
+                this.balloonLayer.removeRenderable(this.balloon);
+            }
+        }
+    }
+
     public static class AppFrame extends ApplicationTemplate.AppFrame
     {
         protected HotSpotController hotSpotController;
         protected BalloonController balloonController;
-
-        /**
-         * Custom Marker class that captures the ID of the marker.
-         */
-        protected class MyMarker extends BasicMarker
-        {
-            protected int id;
-
-            public MyMarker(Position position, MarkerAttributes attrs, int id)
-            {
-                super(position, attrs);
-                this.id = id;
-            }
-
-            public int getId()
-            {
-                return this.id;
-            }
-        }
-
-        /**
-         * Controller to create a balloon when a markers is selected.
-         */
-        protected class MarkerBalloonController extends BalloonController
-        {
-            /** Layer to render the balloons. */
-            protected RenderableLayer balloonLayer;
-
-            public MarkerBalloonController(WorldWindow wwd)
-            {
-                super(wwd);
-                this.balloonLayer = new RenderableLayer();
-                wwd.getModel().getLayers().add(this.balloonLayer);
-            }
-
-            /**
-             * Create a ballon for the marker that was selected.
-             *
-             * @param pickedObject PickedObject to inspect. May not be null.
-             *
-             * @return a balloon
-             */
-            @Override
-            protected Balloon getBalloon(PickedObject pickedObject)
-            {
-                Object topObject = pickedObject.getObject();
-                if (topObject instanceof MyMarker)
-                {
-                    Balloon balloon = this.createBalloon((MyMarker) topObject, pickedObject.getPosition());
-                    this.balloonLayer.addRenderable(balloon);
-
-                    return balloon;
-                }
-
-                return super.getBalloon(pickedObject);
-            }
-
-            /**
-             * Create a balloon for a marker.
-             */
-            protected Balloon createBalloon(MyMarker marker, Position position)
-            {
-                String balloonText = "Marker " + marker.getId();
-                GlobeBalloon balloon = new GlobeBrowserBalloon(balloonText, position);
-                balloon.setAttributes(new BasicBalloonAttributes());
-                balloon.setVisible(false);
-                balloon.setAlwaysOnTop(true);
-                return balloon;
-            }
-
-            /**
-             * Remove the previously created balloon.
-             */
-            @Override
-            protected void hideBalloon()
-            {
-                if (this.balloon != null)
-                {
-                    this.balloonLayer.removeRenderable(this.balloon);
-                }
-            }
-        }
 
         public AppFrame()
         {
