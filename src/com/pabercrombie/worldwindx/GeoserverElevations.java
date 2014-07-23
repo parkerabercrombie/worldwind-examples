@@ -12,11 +12,11 @@ import javax.swing.*;
 import java.net.URI;
 
 /**
- * Example of how to configure an elevation model for the Geoserver WMS.
+ * Example of how to configure an elevation model for the GeoServer WMS.
  *
  * @author Parker Abercrombie
  */
-public class GeoserverElevations extends ApplicationTemplate
+public class GeoServerElevations extends ApplicationTemplate
 {
     public static class AppFrame extends ApplicationTemplate.AppFrame
     {
@@ -44,7 +44,7 @@ public class GeoserverElevations extends ApplicationTemplate
 
                 // Configure parameters for the Spearfish elevation model.
                 AVList params = new AVListImpl();
-                params.setValue(AVKey.LAYER_NAMES, "sf:sfdem");           // Layer name configured in Geoserver
+                params.setValue(AVKey.LAYER_NAMES, "sf:sfdem");           // Layer name configured in GeoServer
                 params.setValue(AVKey.IMAGE_FORMAT, "application/bil32"); // Data format to request
                 params.setValue(AVKey.BYTE_ORDER, AVKey.BIG_ENDIAN);      // Byte order of BIL files returned by server
                 params.setValue(AVKey.MISSING_DATA_SIGNAL, -9.999999933815813E36); // Missing data flag
@@ -61,7 +61,7 @@ public class GeoserverElevations extends ApplicationTemplate
 
                         // Replace elevation model with imported elevations. This makes the elevation 0 everywhere
                         // except in the region imported, so it is easy to tell that the elevations are being pulled
-                        // from geoserver. For production use create a CompoundElevationModel and add the new elevations
+                        // from GeoServer. For production use create a CompoundElevationModel and add the new elevations
                         // to the compound model.
                         globe.setElevationModel(spearfish);
 
@@ -86,6 +86,6 @@ public class GeoserverElevations extends ApplicationTemplate
 
     public static void main(String[] args)
     {
-        ApplicationTemplate.start("Geoserver Elevation Example", GeoserverElevations.AppFrame.class);
+        ApplicationTemplate.start("GeoServer Elevation Example", GeoServerElevations.AppFrame.class);
     }
 }
